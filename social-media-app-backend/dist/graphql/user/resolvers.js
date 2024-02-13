@@ -8,21 +8,26 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = __importDefault(require("express"));
-const express4_1 = require("@apollo/server/express4");
-const app = (0, express_1.default)();
-const index_1 = require("./graphql/index");
-function init() {
-    return __awaiter(this, void 0, void 0, function* () {
-        app.use(express_1.default.json());
-        app.use("/graphql", (0, express4_1.expressMiddleware)(yield (0, index_1.createGqlServer)()));
-        app.listen(8000, () => {
-            console.log("Server Listening at PORT 8000");
-        });
-    });
-}
-init();
+exports.resolvers = void 0;
+const db_1 = require("../../lib/db");
+exports.resolvers = {
+    queries: {
+        hello: () => `Hello There from Graphql Server`,
+        say: (_, name) => `Hello ${name}`,
+    },
+    mutations: {
+        createUser: (_, { email, firstName, lastName, password, }) => __awaiter(void 0, void 0, void 0, function* () {
+            yield db_1.prismaClient.user.create({
+                data: {
+                    email,
+                    password,
+                    firstName,
+                    lastName,
+                    salt: "H@rsh7017",
+                },
+            });
+            return true;
+        }),
+    },
+};
